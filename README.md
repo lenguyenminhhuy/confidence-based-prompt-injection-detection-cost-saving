@@ -1,4 +1,4 @@
-# Confidence-Based Two-Stage Cascading for Prompt-Injection Detection
+# Cost-Efficient Prompt Injection Detection through Confidence-Based Two-Stage Cascading
 
 Research code for a two-stage prompt-injection detector. A small fine-tuned
 language model (Stage 1) screens every request and clears only the inputs it
