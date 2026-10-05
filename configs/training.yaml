@@ -1,0 +1,36 @@
+# QLoRA defaults for Stage 1 fine-tuning
+seed: 42
+
+optimizer:
+  lr: 2.0e-4
+  weight_decay: 0.0
+  warmup_ratio: 0.03
+  lr_scheduler_type: cosine
+
+trainer:
+  num_train_epochs: 3
+  per_device_train_batch_size: 8
+  per_device_eval_batch_size: 16
+  gradient_accumulation_steps: 4
+  gradient_checkpointing: true
+  bf16: true
+  max_grad_norm: 1.0
+  logging_steps: 25
+  eval_steps: 200
+  save_steps: 200
+  save_total_limit: 2
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  bias: none
+  task_type: CAUSAL_LM
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_compute_dtype: bfloat16
+  bnb_4bit_use_double_quant: true
+
+max_seq_length: 2048

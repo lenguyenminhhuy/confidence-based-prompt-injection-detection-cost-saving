@@ -1,0 +1,52 @@
+# 16 GB GPU variant of configs/training.yaml.
+#
+# Why this exists: configs/training.yaml uses per_device_train_batch_size: 8 at
+# max_seq_length: 2048. train_stage1.py sets loss_type="nll" (a TRL/transformers-5
+# workaround), which fully materializes the [batch, seq, vocab] logits tensor every
+# step. At batch 8 x 2048 x ~150k vocab that transient is ~5 GB (bf16) / ~10 GB after
+# the fp32 CE upcast — it OOMs a 16 GB GPU regardless of the (tiny, 4-bit) base
+# weights. That config was tuned for a 24 GB+ Colab GPU.
+#
+# Sizing is driven by the actual train.jsonl length distribution (payload-safe check):
+# median ~34 tokens, p95 ~684, p99 ~1053; only ~1% of rows exceed 1024 tokens. So:
+#   max_seq_length 2048 -> 1024   truncates ~1% of rows, halves logits+activations
+#   per_device_batch    8 -> 4    worst-case logits 4*1024*150k*2B ~= 1.2 GB (fits 16 GB)
+#   grad_accum          4 -> 8    keeps the EFFECTIVE batch = 4*8 = 32 (same as 8*4)
+# batch 4 (not 1) matters: at batch 1 the fixed per-step cost (bnb 4-bit dequant +
+# gradient-checkpoint recompute + launch overhead) dominates and starves the T4 —
+# that is what produced the ~59 s/it / 68 h ETA. batch 4 restores GPU utilization.
+seed: 42
+
+optimizer:
+  lr: 2.0e-4
+  weight_decay: 0.0
+  warmup_ratio: 0.03
+  lr_scheduler_type: cosine
+
+trainer:
+  num_train_epochs: 1
+  per_device_train_batch_size: 4      # was 8  (batch 1 starved the T4 -> 68 h ETA)
+  per_device_eval_batch_size: 8       # was 16
+  gradient_accumulation_steps: 8      # keeps effective batch = 4*8 = 32
+  gradient_checkpointing: true
+  bf16: true
+  max_grad_norm: 1.0
+  logging_steps: 25
+  eval_steps: 200
+  save_steps: 200
+  save_total_limit: 2
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  bias: none
+  task_type: CAUSAL_LM
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_compute_dtype: bfloat16
+  bnb_4bit_use_double_quant: true
+
+max_seq_length: 1024

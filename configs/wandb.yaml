@@ -1,0 +1,13 @@
+project: cascade-pid
+entity: null  # set per-user via env or override
+tags:
+  - prompt-injection
+  - cascade
+
+groups:
+  data_prep: data-prep
+  model_selection: model-selection
+  calibration: calibration
+  baselines: baselines
+  cascade_eval: cascade-eval
+  threshold_sweep: threshold-sweep

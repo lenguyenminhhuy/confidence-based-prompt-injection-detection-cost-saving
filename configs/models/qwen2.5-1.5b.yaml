@@ -1,0 +1,23 @@
+name: qwen2.5-1.5b
+hf_id: Qwen/Qwen2.5-1.5B-Instruct
+tokenizer: Qwen/Qwen2.5-1.5B-Instruct
+
+chat_template:
+  system_open: "<|im_start|>system\n"
+  system_close: "<|im_end|>\n"
+  user_open: "<|im_start|>user\n"
+  user_close: "<|im_end|>\n"
+  assistant_open: "<|im_start|>assistant\n"
+  assistant_close: "<|im_end|>\n"
+
+lora_target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+
+constrained_decoding:
+  labels: ["benign", "injection"]

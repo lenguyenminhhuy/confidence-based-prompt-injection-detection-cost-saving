@@ -1,0 +1,21 @@
+# Tiny fixture for scripts/train/train_stage1.py --dry-run / CI smoke ONLY.
+# Not a real detector — sshleifer/tiny-gpt2 is a ~random 2-layer model that
+# downloads in seconds and has a real tokenizer, so the training loop, LoRA
+# wiring, and adapter save can be exercised on CPU/MPS without a multi-GB pull.
+name: tiny-test
+hf_id: sshleifer/tiny-gpt2
+tokenizer: sshleifer/tiny-gpt2
+
+chat_template:
+  system_open: "System: "
+  system_close: "\n"
+  user_open: "User: "
+  user_close: "\n"
+  assistant_open: "Assistant: "
+  assistant_close: "\n"
+
+lora_target_modules:
+  - c_attn
+
+constrained_decoding:
+  labels: ["benign", "injection"]

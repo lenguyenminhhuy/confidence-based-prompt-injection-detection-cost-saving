@@ -1,0 +1,25 @@
+# Data and results (built locally, not redistributed)
+/data/
+/results/
+/logs/
+
+# Environment
+.env
+*.egg-info/
+__pycache__/
+*.pyc
+.pytest_cache/
+wandb/
+
+# Model weights
+*.bin
+*.safetensors
+*.pt
+
+# Notebooks
+.ipynb_checkpoints/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store

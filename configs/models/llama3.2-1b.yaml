@@ -1,0 +1,23 @@
+name: llama3.2-1b
+hf_id: meta-llama/Llama-3.2-1B-Instruct
+tokenizer: meta-llama/Llama-3.2-1B-Instruct
+
+chat_template:
+  system_open: "<|start_header_id|>system<|end_header_id|>\n\n"
+  system_close: "<|eot_id|>"
+  user_open: "<|start_header_id|>user<|end_header_id|>\n\n"
+  user_close: "<|eot_id|>"
+  assistant_open: "<|start_header_id|>assistant<|end_header_id|>\n\n"
+  assistant_close: "<|eot_id|>"
+
+lora_target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+
+constrained_decoding:
+  labels: ["benign", "injection"]

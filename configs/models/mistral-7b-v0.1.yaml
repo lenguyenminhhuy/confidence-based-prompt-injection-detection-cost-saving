@@ -1,0 +1,31 @@
+# Stage-2 base. Same base weights as the released DataSentinel-7B adapter, so the
+# Stage-2 classifier is a fine-tune on identical Mistral-7B-v0.1 weights.
+#
+# Mistral-7B-v0.1 is a BASE (non-instruct) model, so the chat_template markers
+# are just consistent SFT delimiters, not learned control tokens. The template
+# below is tokenizer-verified: with the SentencePiece tokenizer, the label
+# tokenizes identically alone (stage1 scoring) and as the head of the completion
+# (TRL training) — the property both the trainer and Stage1Detector rely on.
+name: mistral-7b-v0.1
+hf_id: mistralai/Mistral-7B-v0.1
+tokenizer: mistralai/Mistral-7B-v0.1
+
+chat_template:
+  system_open: ""
+  system_close: "\n\n"
+  user_open: ""
+  user_close: "\n"
+  assistant_open: ""
+  assistant_close: "</s>"
+
+lora_target_modules:
+  - q_proj
+  - k_proj
+  - v_proj
+  - o_proj
+  - gate_proj
+  - up_proj
+  - down_proj
+
+constrained_decoding:
+  labels: ["benign", "injection"]

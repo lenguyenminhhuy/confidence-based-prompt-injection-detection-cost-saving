@@ -1,0 +1,39 @@
+# QLoRA defaults for the 7B Stage-2 fine-tune.
+# Identical to configs/training.yaml EXCEPT the per-device batch is dropped to 1
+# and gradient_accumulation raised to 32 so a 7B base fits a 24 GB-class GPU
+# while holding the SAME effective batch (1*32 = 32 = the E2 stage-1 8*4).
+seed: 42
+
+optimizer:
+  lr: 2.0e-4
+  weight_decay: 0.0
+  warmup_ratio: 0.03
+  lr_scheduler_type: cosine
+
+trainer:
+  num_train_epochs: 1
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 2
+  gradient_accumulation_steps: 32
+  gradient_checkpointing: true
+  bf16: true
+  max_grad_norm: 1.0
+  logging_steps: 25
+  eval_steps: 200
+  save_steps: 200
+  save_total_limit: 2
+
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  bias: none
+  task_type: CAUSAL_LM
+
+quantization:
+  load_in_4bit: true
+  bnb_4bit_quant_type: nf4
+  bnb_4bit_compute_dtype: bfloat16
+  bnb_4bit_use_double_quant: true
+
+max_seq_length: 2048
